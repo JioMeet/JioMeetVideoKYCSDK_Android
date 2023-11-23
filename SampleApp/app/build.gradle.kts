@@ -1,7 +1,6 @@
 plugins {
     id ("com.android.application")
     id ("org.jetbrains.kotlin.android")
-    id ("com.google.dagger.hilt.android")
     id ("kotlin-kapt")
     id("kotlin-parcelize")
 }
@@ -64,8 +63,8 @@ android {
 repositories {
     maven {
         credentials {
-            username = "YOUR_GITHUB_USERNAME"
-            password = "YOUR_GITHUB_TOKEN"
+            username = "GITHUB USERNAME HERE"
+            password = "GITHUB PASSWORD HERE"
         }
         url = uri("https://maven.pkg.github.com/JioMeet/JioMeetHealthCareTemplate_ANDROID")
     }
@@ -75,14 +74,11 @@ repositories {
 
 
 dependencies {
-    implementation ("com.jiomeet.platform:jiomeethealthcaretemplate:3.0.0-SNAPSHOT-2")
+    implementation ("com.jiomeet.platform:jiomeethealthcaretemplate:3.1.0-SNAPSHOT")
     implementation ("androidx.core:core-ktx:1.9.0")
     testImplementation ("junit:junit:4.13.2")
     androidTestImplementation ("androidx.test.ext:junit:1.1.5")
     androidTestImplementation ("androidx.test.espresso:espresso-core:3.5.1")
-    implementation ("androidx.hilt:hilt-navigation-compose:1.0.0")
-    implementation ("com.google.dagger:hilt-android:2.44")
-    kapt ("com.google.dagger:hilt-android-compiler:2.44")
 }
 kapt {
     correctErrorTypes = true

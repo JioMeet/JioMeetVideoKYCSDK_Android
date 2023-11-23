@@ -15,7 +15,6 @@ import com.example.demo.view.ui.CoreLoginView
 import com.example.demo.viewModel.AppViewModel
 import com.jiomeet.core.constant.Constant
 import com.jiomeet.core.utils.BaseUrl
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.jio.telemedicine.sdkmanager.JioMeetSdkManager
 import org.jio.telemedicine.templates.core.JioHealthCareLauncherActivity
@@ -23,7 +22,6 @@ import org.jio.telemedicine.templates.core.OnLeaveParticipant
 import org.jio.telemedicine.templates.core.OnParticipantIconClicked
 import org.jio.telemedicine.util.CallbackSharedEvent
 
-@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val viewModel: AppViewModel by viewModels()
 
@@ -36,7 +34,7 @@ class MainActivity : ComponentActivity() {
         // Calling SDK from Activity as (Component activity)
         // Passing valid meeting ID and MeetingPin along with user name
         //Code to observe differnt events in meeting
-        BaseUrl.initializedNetworkInformation(this@MainActivity, Constant.Environment.PROD)
+        BaseUrl.initializedNetworkInformation(this@MainActivity, Constant.Environment.PRESTAGE)
         lifecycleScope.launch {
             CallbackSharedEvent.callbackFlow.events.collect {
                 when(it){
