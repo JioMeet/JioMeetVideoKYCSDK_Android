@@ -52,9 +52,7 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.3.2"
     }
-//    kotlin {
-//        jvmToolchain(11)
-//    }
+
     kotlinOptions {
         jvmTarget = ("11")
     }
@@ -63,10 +61,10 @@ android {
 repositories {
     maven {
         credentials {
-            username = "GITHUB USERNAME HERE"
-            password = "GITHUB PASSWORD HERE"
+            username = "GITHUB-USERNAME-HERE"
+            password = "GITHUB-PASSWORD-HERE"
         }
-        url = uri("https://maven.pkg.github.com/JioMeet/JioMeetHealthCareTemplate_ANDROID")
+        url = uri("https://maven.pkg.github.com/JioMeet/JioMeetVideoKYCSDK_Android")
     }
     google()
     mavenCentral()
@@ -74,7 +72,7 @@ repositories {
 
 
 dependencies {
-    implementation ("com.jiomeet.platform:jiomeethealthcaretemplate:3.1.0-SNAPSHOT")
+    implementation ("com.jiomeet.platform:jiomeetkyctemplatesdk:1.0.0")
     implementation ("androidx.core:core-ktx:1.9.0")
     testImplementation ("junit:junit:4.13.2")
     androidTestImplementation ("androidx.test.ext:junit:1.1.5")

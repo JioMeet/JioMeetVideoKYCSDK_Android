@@ -1,6 +1,6 @@
-# JioHealthHub Template UI Quickstart
+# JioMeet Video KYC Template UI Quickstart
 
-**Welcome to JioHealthCareTemplate Template UI**, a SDK that streamlines the integration of Jiomeet's powerful audio and video functionalities.
+**Welcome to Jiomeet Video KYC Template UI**, a SDK that streamlines the integration of Jiomeet's powerful audio and video functionalities into your Android application with minimal coding effort. With just a few simple steps, you can enable high-quality real-time communication, allowing users to effortlessly connect, collaborate, and communicate.
 
 ## Table of Contents
 
@@ -20,19 +20,9 @@
 
 ## Introduction
 
-In this documentation, we'll guide you through the process of installation, enabling you to enhance your Android app with Jiomeet's real-time communication capabilities swiftly and efficiently.Let's get started on your journey to creating seamless communication experiences with Jiomeet Template UI!
-
-![image info](./images/JioMeetTemplateUi.png)
+In this documentation, we'll guide you through the process of installation, enabling you to enhance your Android app with Jiomeet's real-time communication capabilities swiftly and efficiently.Let's get started on your journey to creating seamless communication experiences with Jiomeet Video KYC Template UI!
 
 ---
-
-## Features
-
-In Jiomeet Template UI, you'll find a range of powerful features designed to enhance your Android application's communication and collaboration capabilities. These features include:
-
-**Voice and Video Calling**:Enjoy high-quality, real-time audio and video calls with your contacts.
-
-![image info](./images/Features.png)
 
 ## Prerequisites
 
@@ -73,17 +63,41 @@ Use the [create meeting api](https://dev.jiomeet.com/docs/JioMeet%20Platform%20S
 
 ## Configure JioMeet Template UI inside your app
 
-i. In Gradle Scripts/build.gradle (Module: <projectname>) add the Template UI dependency. The dependencies section should look like the following:
+i. **Step 1** : Generate a Personal Access Token for GitHub
+
+- Settings -> Developer Settings -> Personal Access Tokens -> Generate new token
+- Make sure you select the following scopes (“ read:packages”) and Generate a token
+- After Generating make sure to copy your new personal access token. You cannot see it again! The only option is to generate a new key.
+
+ii. Update build.gradle inside the application module
+
+```kotlin
+    repositories {
+    maven {
+        credentials {
+            <!--github user name-->
+                username = ""
+            <!--github user token-->
+                password = ""
+        }
+        url = uri("https://maven.pkg.github.com/JioMeet/JioMeetVideoKYCSDK_Android")
+    }
+    google()
+    mavenCentral()
+}
+```
+
+iii. In Gradle Scripts/build.gradle (Module: <projectname>) add the Template UI dependency. The dependencies section should look like the following:
 
 ```gradle
 dependencies {
     ...
-    implementation "com.jiomeet.platform:jiomeethealthcaretemplate:<version>"
+    implementation "com.jiomeet.platform:jiomeetkyctemplatesdk:<version>"
     ...
 }
 ```
 
-Find the [Latest version](https://maven.pkg.github.com/JioMeet/JioMeetHealthCareTemplate_ANDROID/releases) of the UI Kit and replace <version> with the one you want to use. For example: 2.1.8.
+Find the [Latest version](https://github.com/JioMeet/JioMeetVideoKYCSDK_Android/releases) of the UI Kit and replace <version> with the one you want to use. For example: 2.1.8.
 
 ### Add permissions for network and device access.
 
@@ -150,42 +164,72 @@ public void onRequestPermissionsResult(int requestCode, @NonNull String[] permis
 
 ### Start your App
 
-update onCreate of parent app to run JioHealthCareLauncherActivity and pass when the app starts. The updated code should like the provided code sample:
+Initialize modules by calling 
+
+```kotlin
+CoreApplication().recreateModules(this)
+```
+
+Set the environment to PROD
+
+```kotlin
+BaseUrl.initializedNetworkInformation(this, Constant.Environment.PROD)
+```
+
+Update onCreate to run LaunchKYCCore() when the app starts. The updated code should like the provided code sample:
 
 ```kotlin
 
+ private val jmJoinMeetingConfig =
+            JMJoinMeetingConfig(
+                userRole = Speaker,
+                isInitialAudioOn = true,
+                isInitialVideoOn = true,
+                isShareScreen = false,
+                isShareWhiteBoard = false
+            )
 
-override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-
-    //Code to observe differnt events in meeting
-     lifecycleScope.launch {
-            CallbackSharedEvent.callbackFlow.events.collect {
-                when(it){
-                    is OnParticipantIconClicked -> {
-                        Toast.makeText(this,"ParticipantIcon clicked",Toast.LENGTH_LONG).show()
-                    }
-                    is OnLeaveParticipant ->{
-                        Toast.makeText(this,"User Left Meeting",Toast.LENGTH_LONG).show()
-                        finish()
-                    }
+        private val jioMeetConnectionListener =
+            object : JioMeetConnectionListener {
+                override fun onLeaveMeeting() {
+                    finish()
                 }
             }
-        }
 
-        val intent = Intent(this, JioHealthCareLauncherActivity::class.java)
-        intent.putExtra(JioMeetSdkManager.MEETING_ID,intent.getStringExtra(JioMeetSdkManager.MEETING_ID).toString())
-        intent.putExtra(JioMeetSdkManager.MEETING_PIN,intent.getStringExtra(JioMeetSdkManager.MEETING_PIN).toString()
-        intent.putExtra(JioMeetSdkManager.GUEST_NAME,intent.getStringExtra(JioMeetSdkManager.GUEST_NAME).toString())
-        startActivity(intent)
-}
+        val jmJoinMeetingData =
+            JMJoinMeetingData(
+                meetingId = "",
+                meetingPin = "",
+                displayName = "",
+                version = "",
+                deviceId = "deviceId"
+            )
+            
+            // You can select any KYC option from the following that can be passed to LaunchKYCCore. 
+
+        <!--enum class KycOptions(val value: String) {-->
+        <!--    CALL("Call"),-->
+        <!--    FACE_UI("Face UI"),-->
+        <!--    CARD_UI("Card UI")-->
+        <!--}-->
+
+        LaunchKYCCore(
+            jioMeetConnectionListener = jioMeetConnectionListener,
+            jmJoinMeetingConfig = jmJoinMeetingConfig,
+            jmJoinMeetingData = jmJoinMeetingData,
+            kycOption = kycOption.value, // KYC value KycOptions.CALL or KycOptions.FACE_UI or KycOptions.CARD_UI
+            switchCameraState = switchCameraClicked.value, // Camera click state TRUE/FALSE
+            captureImageClick = captureImageClicked.value, // Capture image click state TRUE/FALSE
+            onCaptureImage = { imagePath ->
+                println("Captured Image Path $imagePath") // Captured image PATH
+            },
+            leaveMeeting = leaveMeetingClicked.value // Leave meeting click state TRUE/FALSE
+        )
 ```
-
-- **_onShareInviteClicked_**(meetingId: String, meeting
 
 ## Sample app
 
-Visit our [JiomeetHealthCareTemplate UI Sample app](https://github.com/JioMeet/JioMeetCoreTemplateSDK_ANDROID) repo to run the ample app.
+Visit our [Jiomeet KYC Template UI Sample app](https://github.com/JioMeet/JioMeetVideoKYCSDK_Android) repo to run the sample app.
 
 ---
 
